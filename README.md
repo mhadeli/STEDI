@@ -1,5 +1,5 @@
 # AWS-Data-Lakehouse
-## Udacity's Data Engineering with AWS Nanodegree Program STEDI Project
+##  Udacity's Data Engineering with AWS Nanodegree Program STEDI Project
 
 The repository includes 5 files:
 

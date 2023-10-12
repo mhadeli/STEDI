@@ -1,17 +1,35 @@
-CREATE EXTERNAL TABLE IF NOT EXISTS `stedi_db`.`accelerometer_landing_` (
-  `user` string,
-  `timeStamp` bigint,
-  `x` float,
-  `y` float,
-  `z` float
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+
+args = getResolvedOptions(sys.argv, ["JOB_NAME"])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args["JOB_NAME"], args)
+
+# Script generated for node Amazon S3
+AmazonS3_node1697119322469 = glueContext.create_dynamic_frame.from_options(
+    format_options={"multiline": False},
+    connection_type="s3",
+    format="json",
+    connection_options={
+        "paths": ["s3://stedi-project-s3/accelerometer_landing/"],
+        "recurse": True,
+    },
+    transformation_ctx="AmazonS3_node1697119322469",
 )
-ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
-WITH SERDEPROPERTIES (
-  'ignore.malformed.json' = 'FALSE',
-  'dots.in.keys' = 'FALSE',
-  'case.insensitive' = 'TRUE',
-  'mapping' = 'TRUE'
+
+# Script generated for node accmeter
+accmeter_node1697119369326 = glueContext.write_dynamic_frame.from_catalog(
+    frame=AmazonS3_node1697119322469,
+    database="stedi_db",
+    table_name="accelerometer_landing_",
+    transformation_ctx="accmeter_node1697119369326",
 )
-STORED AS INPUTFORMAT 'org.apache.hadoop.mapred.TextInputFormat' OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
-LOCATION 's3://stedi-project-s3/accelerometer_landing/'
-TBLPROPERTIES ('classification' = 'json');
+
+job.commit()
